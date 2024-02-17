@@ -1,9 +1,8 @@
-package study.datajpa.dto;
+package study.toss.dto;
 
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Data
 public class PaymentRequest {

@@ -1,4 +1,4 @@
-package study.datajpa.controller;
+package study.toss.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import study.datajpa.config.TossPaymentConfig;
-import study.datajpa.dto.PaymentRequest;
-import study.datajpa.dto.PaymentResponse;
-import study.datajpa.service.PaymentService;
+import study.toss.config.TossPaymentConfig;
+import study.toss.dto.PaymentRequest;
+import study.toss.dto.PaymentResponse;
+import study.toss.service.PaymentService;
 
 @RestController
 @RequiredArgsConstructor

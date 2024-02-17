@@ -1,8 +1,8 @@
-package study.datajpa.repository;
+package study.toss.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import study.datajpa.dto.Payment;
+import study.toss.dto.Payment;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("select p from Payment p order by p.orderId desc")

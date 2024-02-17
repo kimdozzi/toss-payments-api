@@ -1,4 +1,4 @@
-package study.datajpa.dto;
+package study.toss.dto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

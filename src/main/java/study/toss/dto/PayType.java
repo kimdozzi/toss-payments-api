@@ -1,4 +1,4 @@
-package study.datajpa.dto;
+package study.toss.dto;
 
 public enum PayType {
     CARD, CASH, POINT;

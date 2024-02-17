@@ -1,4 +1,4 @@
-package study.datajpa.config;
+package study.toss.config;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

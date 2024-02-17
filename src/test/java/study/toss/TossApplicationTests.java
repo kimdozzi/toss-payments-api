@@ -1,10 +1,10 @@
-package study.datajpa;
+package study.toss;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DataJpaApplicationTests {
+class TossApplicationTests {
 
 	@Test
 	void contextLoads() {

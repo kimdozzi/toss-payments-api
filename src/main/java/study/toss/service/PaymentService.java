@@ -1,11 +1,11 @@
-package study.datajpa.service;
+package study.toss.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import study.datajpa.dto.Payment;
-import study.datajpa.dto.PaymentResponse;
-import study.datajpa.repository.PaymentRepository;
+import study.toss.dto.Payment;
+import study.toss.dto.PaymentResponse;
+import study.toss.repository.PaymentRepository;
 
 @Service
 @RequiredArgsConstructor
