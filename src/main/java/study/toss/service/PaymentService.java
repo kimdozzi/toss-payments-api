@@ -3,7 +3,7 @@ package study.toss.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import study.toss.dto.Payment;
+import study.toss.domain.Payment;
 import study.toss.dto.PaymentResponse;
 import study.toss.repository.PaymentRepository;
 

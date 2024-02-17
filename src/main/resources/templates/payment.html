@@ -10,12 +10,12 @@
 <section>
     <!--  충전하기 버튼 만들기  -->
     <span>총 포인트 충전 금액 :</span>
-    <span>58500원</span>
-    <button id="payment-button">58500원 충전하기</button>
+    <span>50원</span>
+    <button id="payment-button">50원 충전하기</button>
 </section>
 <script>
     // ------ 클라이언트 키로 객체 초기화 ------
-    var clientKey = '테스트_클라이언트_키'
+    var clientKey = 'test_ck_5OWRapdA8dwYaEqgE20Pro1zEqZK'
     var tossPayments = TossPayments(clientKey)
     // ------ 충전하기 버튼에 기능 추가 ------
     var button = document.getElementById('payment-button') // 충전하기 버튼
@@ -23,13 +23,13 @@
 
         // ------ 결제창 띄우기 ------
         tossPayments.requestPayment('CARD', {
-            amount: 58500,
+            amount: 50,
             orderId: 'bec1d544-2a34-4f44-ada0-c5213d8fd8dd',
-            orderName: '포인트 충전',
-            customerName: '첫번째',
+            orderName: 'point',
+            customerName: 'first time',
             customerEmail: 'test1@gmail.com',
-            successUrl: 'http://localhost:8080/toss/success',
-            failUrl: 'http://localhost:8080/toss/fail'
+            successUrl: 'http://localhost:8080/api/payment/toss/success',
+            failUrl: 'http://localhost:8080/api/payment/toss/fail'
         })
     })
 </script>
