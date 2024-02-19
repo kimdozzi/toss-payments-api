@@ -1,6 +1,7 @@
 package study.toss.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,16 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 import study.toss.config.TossPaymentConfig;
 import study.toss.dto.PaymentRequest;
 import study.toss.dto.PaymentResponse;
+import study.toss.dto.PaymentSuccessResponse;
 import study.toss.service.PaymentService;
+import study.toss.util.exception.SuccessCode;
+import study.toss.util.response.dto.CommonResponse;
+import study.toss.util.response.dto.SingleResponse;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/payment")
+@Slf4j
 public class PaymentController {
-    /*
-    *    success_url: "http://localhost:8080/api/payment/toss/success"
-    *    fail_url: "http://localhost:8080/api/payment/toss/fail"
-    */
 
     private final PaymentService paymentService;
     private final TossPaymentConfig tossPaymentConfig;
@@ -30,32 +32,29 @@ public class PaymentController {
     // Request : 사용자 정보
     // Response : DB에 정보 저장 후 사용자 정보 반환
     @PostMapping("/toss")
-    public ResponseEntity requestTossPayment(@RequestBody PaymentRequest paymentRequest) {
-        PaymentResponse paymentResponseDto = paymentService.requestTossPayment(paymentRequest.toEntity());
-        paymentResponseDto.setSuccessUrl(paymentRequest.getSuccessUrl() == null ? tossPaymentConfig.getSuccessUrl()
-                : paymentRequest.getSuccessUrl());
-        paymentResponseDto.setFailUrl(paymentRequest.getFailUrl() == null ? tossPaymentConfig.getFailUrl()
-                : paymentRequest.getFailUrl());
-        return ResponseEntity.ok().body(paymentResponseDto);
+    public ResponseEntity<SingleResponse<PaymentResponse>> requestTossPayment(
+            @RequestBody PaymentRequest paymentRequest) {
+        PaymentResponse paymentResponse = paymentService.requestTossPayment(paymentRequest.toEntity());
+        return ResponseEntity.ok().body(
+                new SingleResponse<>(SuccessCode.SUCCESS.getStatus(), SuccessCode.SUCCESS.getMessage(), paymentResponse)
+        );
     }
 
+
     @GetMapping("/toss/success")
-    public ResponseEntity tossPaymentSuccess(@RequestParam String orderId,
-                                             @RequestParam String paymentKey,
-                                             @RequestParam Long amount) {
-        System.out.println("orderId = " + orderId);
-        System.out.println("paymentKey = " + paymentKey);
-        System.out.println("amount = " + amount);
-
-        // return ResponseEntity.ok().body(paymentService.tossPaymentSuccess(orderId, paymentKey, amount));
-        return null;
-
+    public ResponseEntity<SingleResponse<PaymentSuccessResponse>> tossPaymentSuccess(@RequestParam String orderId,
+                                                                                     @RequestParam String paymentKey,
+                                                                                     @RequestParam Long amount) {
+        PaymentSuccessResponse successResponse = paymentService.tossPaymentSuccess(orderId, paymentKey, amount);
+        return ResponseEntity.ok().body(
+                new SingleResponse<>(SuccessCode.SUCCESS.getStatus(), SuccessCode.SUCCESS.getMessage(), successResponse)
+        );
     }
 
     @GetMapping("/toss/fail")
-    public ResponseEntity tossPaymentFail() {
-
-        return null;
+    public ResponseEntity<CommonResponse> tossPaymentFail(@RequestParam String message, @RequestParam String orderId) {
+        paymentService.tossPaymentFail(message, orderId);
+        return ResponseEntity.ok().body(new CommonResponse(
+                SuccessCode.SUCCESS.getStatus(), SuccessCode.SUCCESS.getMessage()));
     }
-
 }

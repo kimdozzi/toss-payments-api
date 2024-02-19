@@ -7,30 +7,28 @@ import study.toss.domain.Payment;
 
 @Data
 public class PaymentRequest {
-    private Long amount; // 가격 정보
-    private Long pointAmount; // 충전될 포인트 정보
-    private String orderName; // 주문명
-    private String successUrl; // 성공 시 리다이렉트 될 URL
-    private String failUrl; // 실패 시 리다이렉트 될 URL
+    private Long amount;
+    private String orderId;
+    private String orderName;
+    private Long pointAmount;
 
 
     @Builder
-    public PaymentRequest(Long amount, Long pointAmount, String orderName, String successUrl, String failUrl) {
+    public PaymentRequest(Long amount, String orderId, String orderName, Long pointAmount) {
         this.amount = amount;
-        this.pointAmount = pointAmount;
+        this.orderId = orderId;
         this.orderName = orderName;
-        this.successUrl = successUrl;
-        this.failUrl = failUrl;
+        this.pointAmount = pointAmount;
     }
-
 
     public Payment toEntity() {
         return Payment.builder()
+                .orderId(UUID.randomUUID().toString())
                 .amount(amount)
                 .pointAmount(pointAmount)
                 .orderName(orderName)
-                .orderId(UUID.randomUUID().toString())
                 .isSuccess(false)
+                .failReason("")
                 .build();
     }
 }

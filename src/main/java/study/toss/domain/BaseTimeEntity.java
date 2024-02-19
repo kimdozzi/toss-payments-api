@@ -19,4 +19,7 @@ public class BaseTimeEntity {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdDate;
 
+    @Column(name = "success_at", updatable = false)
+    private LocalDateTime successDate;
+
 }
