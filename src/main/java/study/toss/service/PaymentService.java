@@ -1,22 +1,23 @@
 package study.toss.service;
 
+import static java.lang.Long.valueOf;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
+
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Collections;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.*;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.boot.json.JsonParser;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.toss.config.TossPaymentConfig;
@@ -48,34 +49,40 @@ public class PaymentService {
 
     @Transactional
     public PaymentSuccessResponse tossPaymentSuccess(PaymentSuccessRequest paymentSuccessRequest) throws Exception {
-
-        Payment payment = verifyPayment(paymentSuccessRequest.getOrderId(), paymentSuccessRequest.getAmount());
+        Payment payment = verifyPayment(paymentSuccessRequest.getOrderId(),
+                valueOf(paymentSuccessRequest.getAmount()));
         PaymentSuccessResponse result = requestPaymentAccept(paymentSuccessRequest);
         payment.setPaymentSuccessStatus(paymentSuccessRequest.getPaymentKey(), true);
         return result;
     }
 
     @Transactional
-    public PaymentSuccessResponse requestPaymentAccept(PaymentSuccessRequest paymentSuccessRequest)
-            throws Exception {
+    public PaymentSuccessResponse requestPaymentAccept(PaymentSuccessRequest paymentSuccessRequest) throws Exception {
         JSONParser parser = new JSONParser();
-        String orderId, amount, paymentKey;
+        String orderId;
+        String amount;
+        String paymentKey;
 
         // 클라이언트에서 받은 JSON 요청 바디입니다.
         paymentKey = paymentSuccessRequest.getPaymentKey();
         orderId = paymentSuccessRequest.getOrderId();
-        amount = String.valueOf(paymentSuccessRequest.getAmount());
+        amount = paymentSuccessRequest.getAmount();
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("orderId", orderId);
-        jsonObject.put("amount", amount);
-        jsonObject.put("paymentKey", paymentKey);
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("paymentKey", paymentKey);
+        hashMap.put("orderId", orderId);
+        hashMap.put("amount", String.valueOf(amount));
 
-        String widgetSecretKey = tossPaymentConfig.getTestSecretKey();
+        JSONObject obj = new JSONObject(hashMap);
+
+        // 토스페이먼츠 API는 시크릿 키를 사용자 ID로 사용하고, 비밀번호는 사용하지 않습니다.
+        // 비밀번호가 없다는 것을 알리기 위해 시크릿 키 뒤에 콜론을 추가합니다.
+        String widgetSecretKey = "test_sk_Poxy1XQL8RgjajjBQvAN37nO5Wml";
         Base64.Encoder encoder = Base64.getEncoder();
-        byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes("UTF-8"));
-        String authorizations = "Basic " + new String(encodedBytes, 0, encodedBytes.length);
+        byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
+        String authorizations = "Basic " + new String(encodedBytes);
 
+        // 결제를 승인하면 결제수단에서 금액이 차감돼요.
         URL url = new URL("https://api.tosspayments.com/v1/payments/confirm");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("Authorization", authorizations);
@@ -84,21 +91,29 @@ public class PaymentService {
         connection.setDoOutput(true);
 
         OutputStream outputStream = connection.getOutputStream();
-        outputStream.write(jsonObject.toString().getBytes("UTF-8"));
+        outputStream.write(obj.toString().getBytes(StandardCharsets.UTF_8));
 
         int code = connection.getResponseCode();
-        boolean isSuccess = code == 200 ? true : false;
+        boolean isSuccess = code == 200;
 
         InputStream responseStream = isSuccess ? connection.getInputStream() : connection.getErrorStream();
 
+        // 결제 성공 및 실패 비즈니스 로직을 구현하세요.
         Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
-        JSONObject jsonobj = (JSONObject) parser.parse(reader);
+        JSONObject jsonObject = (JSONObject) parser.parse(reader);
         responseStream.close();
 
-        System.out.println("isSuccess = " + isSuccess);
-        System.out.println("jsonobj.toJSONString() = " + jsonobj.toJSONString());
+        PaymentSuccessResponse successResponse = PaymentSuccessResponse.builder()
+                .paymentKey(String.valueOf(jsonObject.get("paymentKey")))
+                .amount((Long) jsonObject.get("amount"))
+                .orderName("카드")
+                .pointAmount(10L)
+                .orderId(String.valueOf(jsonObject.get("orderId")))
+                .build();
 
-        return null;
+        System.out.println("jsonObject = " + jsonObject.toJSONString());
+
+        return successResponse;
     }
 
     public Payment verifyPayment(String orderId, Long amount) {

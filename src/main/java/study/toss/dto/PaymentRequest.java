@@ -21,7 +21,7 @@ public class PaymentRequest {
 
     public Payment toEntity() {
         return Payment.builder()
-                .orderId(UUID.randomUUID().toString())
+                .orderId("c99b1468-c3fb-4a90-bebd-0b1bf282a1f4")
                 .amount(amount)
                 .pointAmount(pointAmount)
                 .orderName(orderName)
