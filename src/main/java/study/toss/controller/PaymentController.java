@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import study.toss.config.TossPaymentConfig;
+import study.toss.dto.PaymentFailRequest;
 import study.toss.dto.PaymentRequest;
 import study.toss.dto.PaymentResponse;
+import study.toss.dto.PaymentSuccessRequest;
 import study.toss.dto.PaymentSuccessResponse;
 import study.toss.service.PaymentService;
 import study.toss.util.exception.SuccessCode;
@@ -41,19 +43,17 @@ public class PaymentController {
     }
 
 
-    @GetMapping("/toss/success")
-    public ResponseEntity<SingleResponse<PaymentSuccessResponse>> tossPaymentSuccess(@RequestParam String orderId,
-                                                                                     @RequestParam String paymentKey,
-                                                                                     @RequestParam Long amount) {
-        PaymentSuccessResponse successResponse = paymentService.tossPaymentSuccess(orderId, paymentKey, amount);
+    @PostMapping("/toss/success")
+    public ResponseEntity<SingleResponse<PaymentSuccessResponse>> tossPaymentSuccess(@RequestBody PaymentSuccessRequest paymentSuccessRequest) throws Exception {
+        PaymentSuccessResponse successResponse = paymentService.tossPaymentSuccess(paymentSuccessRequest);
         return ResponseEntity.ok().body(
                 new SingleResponse<>(SuccessCode.SUCCESS.getStatus(), SuccessCode.SUCCESS.getMessage(), successResponse)
         );
     }
 
-    @GetMapping("/toss/fail")
-    public ResponseEntity<CommonResponse> tossPaymentFail(@RequestParam String message, @RequestParam String orderId) {
-        paymentService.tossPaymentFail(message, orderId);
+    @PostMapping("/toss/fail")
+    public ResponseEntity<CommonResponse> tossPaymentFail(@RequestBody PaymentFailRequest paymentFailRequest) {
+        paymentService.tossPaymentFail(paymentFailRequest.getMessage(), paymentFailRequest.getOrderId());
         return ResponseEntity.ok().body(new CommonResponse(
                 SuccessCode.SUCCESS.getStatus(), SuccessCode.SUCCESS.getMessage()));
     }

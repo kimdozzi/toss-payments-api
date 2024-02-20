@@ -8,15 +8,13 @@ import study.toss.domain.Payment;
 @Data
 public class PaymentRequest {
     private Long amount;
-    private String orderId;
     private String orderName;
     private Long pointAmount;
 
 
     @Builder
-    public PaymentRequest(Long amount, String orderId, String orderName, Long pointAmount) {
+    public PaymentRequest(Long amount, String orderName, Long pointAmount) {
         this.amount = amount;
-        this.orderId = orderId;
         this.orderName = orderName;
         this.pointAmount = pointAmount;
     }

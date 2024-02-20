@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import study.toss.dto.PaymentResponse;
+import study.toss.dto.PaymentSuccessResponse;
 
 @Entity
 @Getter
@@ -56,6 +57,18 @@ public class Payment extends BaseTimeEntity{
                 .pointAmount(pointAmount)
                 .orderName(orderName)
                 .orderId(orderId)
+                .build();
+    }
+
+    public PaymentSuccessResponse paymentSuccessResponse() {
+        return PaymentSuccessResponse.builder()
+                .orderId(orderId)
+                .paymentKey(paymentKey)
+                .amount(amount)
+                .pointAmount(pointAmount)
+                .orderName(orderName)
+                .isSuccess(isSuccess)
+                .failReason(failReason)
                 .build();
     }
 
