@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
-
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -16,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.toss.config.TossPaymentConfig;
@@ -123,7 +120,6 @@ public class PaymentService {
         if (amount < 100) {
             throw new BusinessException(ErrorCode.FAILED_POINT_PAYMENT);
         }
-
         if (payment.getAmount().equals(amount)) {
             Long pointAmount = payment.getPointAmount();
             if (pointAmount == (amount / 10) && (pointAmount * 10) == amount) {
